@@ -183,3 +183,45 @@ def segmentation():
                      html.P("Résultat du modèle LeNet entrainé sur cette nouvelle base : pas de réelle amélioration."),
                      html.Div([html.Img(src="./assets/res_lenet_detourage.jpg")], className="div_img"),
                      ])
+
+# Page résultat
+def results():
+    return html.Div([html.H4("Résultats"),
+                     html.P("Détourage améliorent que très peu le résultat"),
+                     html.P("Nouveau modèle LeNet avec recadrage des images centrées en 256x256"),
+                     html.P("Amélioration notable de l'accuracy de 4% par rapport au même modèle sans recadrage"),
+                     html.Div([html.Img(src="./assets/res_lenet_recadrage.jpg")], className="div_img"),
+                     html.Div("Intérêt du recadrage pour garder les informations de la cellule en diminuant la taille de l'image"),
+                     html.Br(),
+                     html.H5("Ajout des types blast et smudge"),
+                     html.P("Intérêt à reconnaitre 2 autres types de cellules : blast et smudge, présentes uniquement dans la base Kaggle"),
+                     html.P("Modèle LeNet sur les 10 classes (entrainement 25600 images) donne une accuracy de 85%"),
+                     html.Div([html.Img(src="./assets/res_lenet_10classes.jpg")], className="div_img"),
+                     html.P("Baisse légère du taux de prédiction à 85%, les scores sur les classes blast et smudge étant plus faibles."),
+                     html.H5("Transfer Learning sur les 10 classes"),
+                     html.P("Utilisation des analyses précédentes pour trouver un modèle optimisé pour les 10 classes."),
+                     html.P("Modèle EfficientNetB1 sur 10 classes, les 2 bases Mendeley et Kaggle,avec recadrage des images 256x256 et augmentation de données (flip, rotation) "),
+                     html.Div([html.Img(src="./assets/efficientnetb1_recadrage_augm.jpg")], className="div_img"),
+                     html.Div([html.Img(src="./assets/matrice_efficientnet.jpg")], className="div_img"),
+                     html.Div("Confusion entre blast, monocyte, smudge et blast"),
+                     html.P("Modèles MobileNet et VGG16 ont donné des résultats similaires avec un temps apprentissage plus long. ")
+                ])
+
+
+# Page Conclusion
+def ending():
+    return html.Div([html.H4("Conclusion"),
+                     html.P("Projet très intéressant : mise en application des connaissances acquises tout au long de la formation."),
+                     html.P("Un travail en équipe aurait été plus enrichissant et peut-être plus complet"),
+                     html.H5("Difficultés rencontrées"),
+                     html.P("Analyse des résultats de modèles de Deep Learning: interprétation du Grad-CAM"),
+                     html.P("Temps apprentissage des modèles de Deep Learning : limite les tests avec des paramètres différents (taux d'apprentissage, nombre de couches et de neurones, utilisation des couches de Dropout…)"),
+                     html.P("Traitement d'image avec OpenCV : manque de connaissance sur la manipulation des images."),
+                     html.Br(),
+                     html.H5("Bilan et suite"),
+                     html.P("Bon résultat obtenu avec un taux de prédiction de plus de 91% sur les 10 types de cellules"),
+                     html.P("Une précision plus élevée serait nécessaire dans le domaine médicale"),
+                     html.P("A rapprocher des résultats actuels obtenus par les algorithmes de traitement d'images"),
+                     html.P("Pour une amélioration des résultats : combinaison des 2 technologies.")
+
+            ])

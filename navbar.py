@@ -20,7 +20,7 @@ def navbar():
                     dbc.Row(
                         [
                             dbc.Col(html.Img(src='./assets/lymphocyte.jpg', height="50px")),
-                            dbc.Col(dbc.NavbarBrand("Reconnaissance des cellules sanguines", className="ms-2")),
+                            dbc.Col(dbc.NavbarBrand("Reconnaissance des cellules sanguines : projet de Computer Vision", className="ms-2")),
                         ],
                         align="center",
                         className="g-0",
