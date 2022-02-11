@@ -2,6 +2,9 @@ import dash_bootstrap_components as dbc
 from dash import html
 
 
+btn_top = html.Div([html.A([html.Img(src="./assets/shift.svg",style={"height":"2.5em"})]
+                    , href="#")], style={"float":"right","margin":"1.5em","margin-bottom":"4.5em"})
+
 # Page de présentation
 def presentation():
     return html.Div([
@@ -38,7 +41,9 @@ def presentation():
         html.H5("Problèmatique"),
         html.P("Actuellement, des automates permettent d'identifier une quinzaine de cellules sanguines en utilisant des algorithmes de traitement d'images : définition de caractéristiques telles que diamètre/périmètre de la cellule et du noyau, couleur, textures (granularités) ..."),
         html.P("Les processus actuels permettent également d'isoler les leucocytes et platelets de l'échantillon pour obtenir une image par cellule."),
-        html.P("L'idée était donc d'utiliser l'intelligence artificielle, notament le Deep Learning, pour essayer d'améliorer la reconnaissance des différentes types de cellules sanguines.")
+        html.P("L'idée était donc d'utiliser l'intelligence artifici"
+               "elle, notament le Deep Learning, pour essayer d'améliorer la reconnaissance des différentes types de cellules sanguines."),
+        btn_top
 
     ])
 
@@ -62,7 +67,7 @@ tab1_data = dbc.Card(dbc.CardBody([
                 html.P("Doublons : 17 doublons ont été identifiés, dont une image classée dans 2 catégories différentes. Ceci révèle la difficulté, même pour le biologiste de classifier les différents types de cellules.  "),
                 html.P("Cellules centrées: sur toutes les images, les leucocytes ou platelets sont bien centrées. Les images peuvent être rognées au format 256*256 à partir du centre, sans perte d’information sur la cellule"),
                 html.P("L’intégralité des images a été conservée."),
-
+                btn_top
             ]),style={"margin":"auto","margin-bottom":"20px"}
             )
 
@@ -79,8 +84,8 @@ tab2_data = dbc.Card(dbc.CardBody([
                 html.P("Doublons : 28 doublons ont été identifiés. Pour chacun, ils ont été classées dans des catégories différentes, révélant là encore les confusions possibles."),
                 html.P("Nettoyage : les doublons, ainsi que certaines images buggés ont été supprimées, des catégories ont été regroupées et d'autres non conservées. La base contient, après nettoyage, 14643 images réparties en 10 catégories."),
                 html.Div([html.Img(src="./assets/repartition_kaggle.jpg")], className="div_img"),
-                html.P("Certaines catégories comprenant peu de cellules, cette base n’a pas été utilisée seule pour entrainer un modèle mais en complément de la base Mendeley.")
-
+                html.P("Certaines catégories comprenant peu de cellules, cette base n’a pas été utilisée seule pour entrainer un modèle mais en complément de la base Mendeley."),
+                btn_top
 
             ]))
 
@@ -112,6 +117,7 @@ def first_model():
                      html.P("Afin d’essayer d’identifier des caractéristiques sur les images, j’ai utilisé un modèle de Manifold Learning pour visualiser les données."),
                      html.Div([html.Img(src="./assets/reduction_dim.jpg")], className="div_img"),
                      html.P("Trois types de cellules sont facilement identifier sur le graphique (groupés) : erythroblast, platelet et lymphocyte. Ces types de cellules obtiennent effectivement des scores supérieurs à 92% et même 99% pour les platelets."),
+                     btn_top
                      ])
 
 
@@ -131,7 +137,8 @@ def deep_model():
                      html.P("Meilleur score avec les paramètres suivants : 8 dernières couches de VGG16 dégelées, utilisation de Adam puis SGD, couches  de 1024, 512 et 256 neurones."),
                      html.H6("Features extraction", style={"text-decoration": "underline"}),
                      html.P("La dernière couche de neurones du modèle de réseau convolutif va être utilisé comme entrée d’un nouveau modèle de Machine Learning. "),
-                     html.P("En réutilisant le modèle précédent en Features extraction avec un modèle SVC, le résultat monte à 98.5% de prédictions correctes")
+                     html.P("En réutilisant le modèle précédent en Features extraction avec un modèle SVC, le résultat monte à 98.5% de prédictions correctes"),
+                     btn_top
                     ])
 
 # Page d'analyse
@@ -164,7 +171,8 @@ def analysis():
                 html.Div([html.Img(src="./assets/repartition_8_2bases.jpg")], className="div_img"),
                 html.P("Modèle type LeNet sur images originales redimensionnées en 256x256 : accuracy à 88% (93% avec la seule base Mendeley"),
                 html.Div([html.Img(src="./assets/lenet_2bases.jpg")], className="div_img"),
-                html.P("Score plus faible avec les 2 bases, montrant une disparité dans les images provenant des 2 bases.")
+                html.P("Score plus faible avec les 2 bases, montrant une disparité dans les images provenant des 2 bases."),
+                btn_top
             ])
 
 # Page Segmentation
@@ -182,6 +190,7 @@ def segmentation():
                      html.P("Nouvelle base d'images, avec fond noir autour de la cellule, recadrées en 256x256 à partir du centre."),
                      html.P("Résultat du modèle LeNet entrainé sur cette nouvelle base : pas de réelle amélioration."),
                      html.Div([html.Img(src="./assets/res_lenet_detourage.jpg")], className="div_img"),
+                     btn_top
                      ])
 
 # Page résultat
@@ -204,7 +213,8 @@ def results():
                      html.Div([html.Img(src="./assets/efficientnetb1_recadrage_augm.jpg")], className="div_img"),
                      html.Div([html.Img(src="./assets/matrice_efficientnet.jpg")], className="div_img"),
                      html.Div("Confusion entre blast, monocyte, smudge et blast"),
-                     html.P("Modèles MobileNet et VGG16 ont donné des résultats similaires avec un temps apprentissage plus long. ")
+                     html.P("Modèles MobileNet et VGG16 ont donné des résultats similaires avec un temps apprentissage plus long. "),
+                     btn_top
                 ])
 
 
@@ -223,5 +233,4 @@ def ending():
                      html.P("Une précision plus élevée serait nécessaire dans le domaine médicale"),
                      html.P("A rapprocher des résultats actuels obtenus par les algorithmes de traitement d'images"),
                      html.P("Pour une amélioration des résultats : combinaison des 2 technologies.")
-
             ])

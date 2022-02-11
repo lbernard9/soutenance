@@ -29,7 +29,7 @@ def navbar():
                     style={"textDecoration": "none"},
                 ),
                 dbc.NavItem(dbc.Button("Source Github", outline=True,
-                                color="secondary", href="https://github.com/lbernard9/bloodcells")),
+                                color="secondary", href="https://github.com/lbernard9/bloodcells",target="_blank")),
             ]
         ),
         color="primary",

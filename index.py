@@ -33,7 +33,19 @@ page = html.Div(
         ),
     ],style={"overflow-x":"hidden"}
 )
-footer = html.Div([])
+footer = dbc.Navbar([dbc.Row([dbc.Col(
+                            html.P(["Soutenance de projet, formation Data Scientist (Datascientest) : Laure BERNARD",
+                                    html.A([html.Img(src="./assets/linkedin.png", style={"height":"1.5em","margin-left":"1em"})],
+                                           href="https://www.linkedin.com/in/laurebernard38/",target="_blank",)
+                                    ],style={"color":"#fff"})
+                                ,
+                                width={"size": 12,"offset":4})])
+                            ]
+                    ,
+                    color="primary",
+                    dark=True,
+                    fixed="bottom"
+                     )
 
 # Contenu selon le menu sélectionné
 @app.callback(Output('content', 'children'),
