@@ -1,6 +1,21 @@
 import dash_bootstrap_components as dbc
-from dash import html
+from dash import html, dcc
+import os
+import base64
 
+from dash.dependencies import Input, Output, State
+from app import app
+from math import ceil
+import model
+
+UPLOAD_DIRECTORY = "./assets/files_demo"
+
+if not os.path.exists(UPLOAD_DIRECTORY):
+    os.makedirs(UPLOAD_DIRECTORY)
+
+for category in model.CATEGORIES:
+    if not os.path.exists(UPLOAD_DIRECTORY+'/'+category):
+        os.makedirs(UPLOAD_DIRECTORY+'/'+category)
 
 btn_top = html.Div([html.A([html.Img(src="./assets/shift.svg",style={"height":"2.5em"})]
                     , href="#")], style={"float":"right","margin":"1.5em","margin-bottom":"4.5em"})
@@ -234,3 +249,134 @@ def ending():
                      html.P("A rapprocher des résultats actuels obtenus par les algorithmes de traitement d'images"),
                      html.P("Pour une amélioration des résultats : combinaison des 2 technologies.")
             ])
+
+
+def demo():
+    return html.Div([html.H4("DEMO"),
+                     html.P("Charger les images à classer"),
+                     html.Div([html.Div([dbc.Select(id="select_category",
+                                              options=[{"label": category,"value": category} for category in model.CATEGORIES])
+                                   ],style={"display":"bloc","float":"left"}),
+
+                             html.Div([dcc.Upload(
+                                     id="upload-data",
+                                     children=html.Div(
+                                         ["Drag and drop or click to select a file to upload."]
+                                     ),
+                                     style={
+                                         "width": "100%",
+                                         "height": "40px",
+                                         "lineHeight": "40px",
+                                         "borderWidth": "1px",
+                                         "borderStyle": "dashed",
+                                         "borderRadius": "5px",
+                                         "textAlign": "center",
+                                         "margin-left": "10px",
+                                     },
+                                     multiple=True,),
+                                 ],style={"display":"bloc","float":"left"}),
+                        ]),
+                     html.Div([html.Ul(id="file-list"),],
+                              style={"padding-top":"1em","margin-bottom":"1em","width":"100%","height":"150px","overflow-y":"scroll"}),
+                     html.P("0 images chargées", id="nb_img"),
+                     html.Div([dbc.Button("Effacer les fichiers", color="primary", className="me-1", id="clear_upload_dir"),]),
+                     html.Br(),
+                     html.H5("Classement des images"),
+                     html.Br(),
+                     dbc.Button("Lancer prédictions du modèle", color="primary", className="me-1", id="predict_classes"),
+                     dbc.Spinner(html.Div(id="loading-output")),
+                     html.Div("",id="classification_images"),
+                     btn_top
+
+            ])
+
+
+
+def save_file(name, content,category_selected):
+    """Decode and store a file uploaded with Plotly Dash."""
+    data = content.encode("utf8").split(b";base64,")[1]
+    with open(os.path.join(UPLOAD_DIRECTORY,category_selected, name), "wb") as fp:
+        fp.write(base64.decodebytes(data))
+
+
+def uploaded_files():
+    """List the files in the upload directory."""
+    files_categories = {}
+    for category in model.CATEGORIES:
+        files=[]
+        directory = UPLOAD_DIRECTORY+'/'+category
+        for filename in os.listdir(directory):
+            path = os.path.join(directory, filename)
+            if os.path.isfile(path):
+                files.append(filename)
+        files_categories[category] = files
+    return files_categories
+
+
+
+
+@app.callback(
+    Output("nb_img","children"),
+    Output("file-list", "children"),
+    [Input("clear_upload_dir", "n_clicks"),
+     Input("upload-data", "filename"), Input("upload-data", "contents")],
+    State("select_category","value")
+)
+def update_output(n_clicks,  uploaded_filenames, uploaded_file_contents, category_selected):
+    """Save uploaded files and regenerate the file list."""
+    if uploaded_filenames is not None and uploaded_file_contents is not None and category_selected is not None:
+        for name, data in zip(uploaded_filenames, uploaded_file_contents):
+            save_file(name, data, category_selected)
+    """ Or delete all files"""
+    if n_clicks is not None  and n_clicks > 0 :
+        for category in model.CATEGORIES:
+            directory = UPLOAD_DIRECTORY+'/'+category
+            for filename in os.listdir(directory):
+                path = os.path.join(directory, filename)
+                if os.path.isfile(path):
+                    os.remove(path)
+    # List of files
+    files = uploaded_files()
+    nb_images=0
+    file_list = []
+    for category in files.keys():
+        files_category = files[category]
+        file_list.append(html.Li([category,html.Ul([html.Li(filename) for filename in files_category])]))
+        nb_images += len(files_category)
+
+    if nb_images == 0:
+        return ["Aucune image",file_list]
+    else:
+        return [str(nb_images)+" images chargées",file_list]
+
+
+
+@app.callback((
+    Output("classification_images","children"),
+    Output("loading-output", "children"),
+    [Input("predict_classes", "n_clicks")]
+))
+def predictions(n_clicks):
+    if n_clicks is not None:
+        accuracy, files, predictions = model.predict_img(UPLOAD_DIRECTORY)
+        max_col = 8
+        html_tr = []
+        for category in model.CATEGORIES:
+            html_tr.append(html.Tr(html.Th(category,colSpan=max_col)))
+            files_cat = [files[i] for i, val in enumerate(predictions) if val == category]
+            for row in range(ceil(len(files_cat) / max_col)):
+                html_td_title = []
+                html_td_img = []
+                for col in range(max_col):
+                    img=""
+                    title=""
+                    if (row * max_col + col) < len(files_cat):
+                        img = html.Img(src=files_cat[row * max_col + col],style={"height":"100px"})
+                        title = os.path.basename(files_cat[row * max_col + col])
+                    html_td_title.append(html.Td(title,style={"font-size":"0.8rem","text-align":"center"}))
+                    html_td_img.append(html.Td(img))
+                html_tr.append(html.Tr(html_td_title))
+                html_tr.append(html.Tr(html_td_img))
+        return [dbc.Table([html.Tbody(html_tr)])],""
+    else:
+        return [html.P("")],""

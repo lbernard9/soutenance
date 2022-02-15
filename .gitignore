@@ -3,4 +3,5 @@ env/
 __pycache__
 .cache/
 .idea/
-
+assets/files_demo/
+model/
