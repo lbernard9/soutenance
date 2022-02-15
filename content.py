@@ -252,6 +252,7 @@ def ending():
 
 
 def demo():
+
     return html.Div([html.H4("DEMO"),
                      html.P("Charger les images à classer"),
                      html.Div([html.Div([dbc.Select(id="select_category",
@@ -277,7 +278,7 @@ def demo():
                                  ],style={"display":"bloc","float":"left"}),
                         ]),
                      html.Div([html.Ul(id="file-list"),],
-                              style={"padding-top":"1em","margin-bottom":"1em","width":"100%","height":"150px","overflow-y":"scroll"}),
+                              style={"border":"thin solid","margin-top":"4em","margin-bottom":"1em","width":"100%","height":"150px","overflow-y":"scroll"}),
                      html.P("0 images chargées", id="nb_img"),
                      html.Div([dbc.Button("Effacer les fichiers", outline=True, color="primary", className="me-1", id="clear_upload_dir"),]),
                      html.Br(),
@@ -285,6 +286,7 @@ def demo():
                      html.Br(),
                      dbc.Button("Lancer prédictions du modèle", color="primary", className="me-1", id="predict_classes"),
                      dbc.Spinner(html.Div(id="loading-output")),
+                     html.P("",id="accuracy",style={"margin-top":"1em"}),
                      html.Div("",id="classification_images"),
                      btn_top
 
@@ -353,6 +355,7 @@ def update_output(n_clicks,  uploaded_filenames, uploaded_file_contents, categor
 
 @app.callback((
     Output("classification_images","children"),
+    Output("accuracy", "children"),
     Output("loading-output", "children"),
     [Input("predict_classes", "n_clicks")]
 ))
@@ -374,9 +377,9 @@ def predictions(n_clicks):
                         img = html.Img(src=files_cat[row * max_col + col],style={"height":"100px"})
                         title = os.path.basename(files_cat[row * max_col + col])
                     html_td_title.append(html.Td(title,style={"font-size":"0.8rem","text-align":"center"}))
-                    html_td_img.append(html.Td(img))
+                    html_td_img.append(html.Td(img,style={"text-align":"center"}))
                 html_tr.append(html.Tr(html_td_title))
                 html_tr.append(html.Tr(html_td_img))
-        return [dbc.Table([html.Tbody(html_tr)])],""
+        return [dbc.Table([html.Tbody(html_tr)])],"Taux de prédictions correctes: "+str(round(accuracy,1))+"%",""
     else:
-        return [html.P("")],""
+        return [html.P("")], "", ""
