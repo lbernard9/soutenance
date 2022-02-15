@@ -279,7 +279,7 @@ def demo():
                      html.Div([html.Ul(id="file-list"),],
                               style={"padding-top":"1em","margin-bottom":"1em","width":"100%","height":"150px","overflow-y":"scroll"}),
                      html.P("0 images chargées", id="nb_img"),
-                     html.Div([dbc.Button("Effacer les fichiers", color="primary", className="me-1", id="clear_upload_dir"),]),
+                     html.Div([dbc.Button("Effacer les fichiers", outline=True, color="primary", className="me-1", id="clear_upload_dir"),]),
                      html.Br(),
                      html.H5("Classement des images"),
                      html.Br(),
